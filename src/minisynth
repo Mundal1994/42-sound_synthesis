@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 import sys, getopt
 
-def main(argv):
+def main(argv, argc):
 	#//print 'Number of arguments:', len(sys.argv), 'arguments.'
 	#print 'Argument List:', str(sys.argv)
-
-	f = open("examples/Simple_Tune.synth", "r")
-	print(f.read())
+	if argc == 2:
+		f = open(argv[1], "r")
+		print(f.read())
+	else:
+		print("Usage: ./minisynth /path/to/file")
 
 if __name__ == "__main__":
-	main(sys.argv[1:])
+	main(sys.argv, len(sys.argv))
