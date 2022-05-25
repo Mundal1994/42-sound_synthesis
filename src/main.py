@@ -1,12 +1,35 @@
 #!/usr/bin/env python3
 import sys, getopt
 
+class Person:
+	def __init__(self, name, age):
+    	self.pitch = pitch
+   	 	self.volume = volume
+		self.
+
+
+class track:
+	def __init__(self, str, index):
+    	self.str = str
+		self.index = index
+
+
 def	filter_track(f):
 	lines = f.readlines()
+	tempo = 'tempo'
+	class track:
+		tempo = 0
+		tracks = ''
 	for line in lines:
 		if (line[0] != '#' or line[0] != '\n'):
 			print (line, end="") # Remove all new lines
-			# print (line)
+		if tempo in line:
+			for word in line.split():
+				if word.isdigit():
+					track.tempo = int(word)
+
+		
+	# print (line)
 	# print (line[0])
 
 def main(argv, argc):
