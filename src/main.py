@@ -1,44 +1,52 @@
 #!/usr/bin/env python3
 import sys, getopt
-
-class Person:
-	def __init__(self, name, age):
-    	self.pitch = pitch
-   	 	self.volume = volume
-		self.
+import pyaudio
+import numpy as np
 
 
 class track:
-	def __init__(self, str, index):
-    	self.str = str
-		self.index = index
+	pitch = 'c'
+	
 
+def	sound():
+	p = pyaudio.PyAudio()
+	volume = 0.5     # range [0.0, 1.0]
+	fs = 44100       # sampling rate, Hz, must be integer
 
-def	filter_track(f):
-	lines = f.readlines()
-	tempo = 'tempo'
-	class track:
-		tempo = 0
-		tracks = ''
-	for line in lines:
-		if (line[0] != '#' or line[0] != '\n'):
-			print (line, end="") # Remove all new lines
-		if tempo in line:
-			for word in line.split():
-				if word.isdigit():
-					track.tempo = int(word)
+	duration = 1.0   # in seconds, may be float
+	pitch = 440.0    # sine frequency, Hz, may be float
 
-		
-	# print (line)
-	# print (line[0])
+	# generate samples, note conversion to float32 array
+	samples = (np.sin(2*np.pi*np.arange(fs*duration)*pitch/fs)).astype(np.float32)	
+	for test in samples:
+		print (samples)
+
+	# for paFloat32 sample values must be in range [-1.0, 1.0]
+	stream = p.open(format=pyaudio.paFloat32,
+	                channels=1,
+	                rate=fs,
+	                output=True)	
+
+	# play. May repeat with different volume values (if done interactively) 
+	stream.write(volume*samples)	
+	stream.stop_stream()
+	stream.close()
+	p.terminate()
+
+def	filter_track(file):
+	lines = [line for line in file.readlines() if line.strip()]
+	# for line in lines:
+		# print (line)
+
 
 def main(argv, argc):
 	#//print 'Number of arguments:', len(sys.argv), 'arguments.'
 	#print 'Argument List:', str(sys.argv)
 	if argc == 2:
 		f = open(argv[1], "r")
-		filter_track(f)	
-		print(f.read())
+		# filter_track(f)
+		sound()
+		# print(f.read())
 	else:
 		print("Usage: ./minisynth /path/to/file")
 
