@@ -3,6 +3,171 @@ import sys
 import pyaudio
 import numpy as np
 import json
+#import pygame as pg
+#import math
+#from pyaudio import PyAudio
+
+#pg.init()
+#pg.mixer.init()
+#screen = pg.display.set_mode((1280, 720))
+#font = pg.font.SysFont("Impact", 48)
+
+sample_rate = 44100
+
+#def synth(frequency, duration=1.5, sampling_rate=44100):
+#	frames = int(duration*sampling_rate)
+#	arr = np.cos(2*np.pi*frequency*np.linspace(0,duration,frames))
+	#add this line below to make it square wave
+	#arr = np.clip(10*arr, -1, 1)
+	#triangular wave
+	#arr = np.cumsum(np.clip(arr*10, -1, 1))
+	#arr = arr/max(np.abs(arr))#adjust triangular range
+#	sound = np.asarray([32767*arr,32767*arr]).T.astype(np.int16)
+#	sound = pg.sndarray.make_sound(sound.copy())
+#	return sound
+
+def play_note(note):
+	p = pyaudio.PyAudio()
+	volume = 0.5
+	stream = p.open(format=pyaudio.paFloat32,
+					channels=1,
+					rate=sample_rate,
+					output=True)
+	# play. May repeat with different volume values (if done interactively) 
+	stream.write(volume*note)
+	stream.stop_stream()
+	stream.close()
+	# close PyAudio (7)
+	p.terminate()
+
+def convert_note_to_hz(char):
+	file = open("notes.txt", 'r')
+	hz = 0
+	lines = file.readlines()
+	for line in lines:
+		# print(note)
+		if (char in line):
+			arr = line.split()
+			hz = float(arr[1])
+	file.close()
+	return (hz)
+
+def music_create(tracks, total_tracks):
+	
+	duration = []
+	freqs = []
+	i = 0
+	while i < total_tracks:
+		j = 0
+		while j < tracks[i]["total"]:
+			#print(tracks[i]["pitch"][j])
+			hz = convert_note_to_hz(tracks[i]["pitch"][j])
+			freqs.append(hz)
+			time = tracks[i]["duration"][j]
+			duration.append(time)
+			j += 1
+		i += 1
+	print(duration[0])
+	print(freqs)
+	notes = []
+	for freq in freqs:
+		i = 0
+		#frames = int(duration*sampling_rate)
+		#note = np.cos(2*np.pi*hz*np.linspace(0,duration,frames))
+	
+		note = (np.sin(2 * np.pi * np.arange(sample_rate*duration[i])*freq/sample_rate)).astype(np.float32)
+		#square wave
+		note = np.clip(10*note, -1, 1)
+
+		#triangular wave
+		#note = np.cumsum(np.clip(note*10, -1, 1))
+		#note = note/max(np.abs(note))
+		notes.append(note)
+		i += 1
+
+	#for freq in freqs:
+		#frames = int(duration*sampling_rate)
+		#note = np.cos(2*np.pi*hz*np.linspace(0,duration,frames))
+	
+		#note2 = (np.sin(2 * np.pi * np.arange(sample_rate*duration)*freq/sample_rate)).astype(np.float32)
+		#square wave
+		#note2 = np.clip(10*note2, -1, 1)
+
+		#triangular wave
+		#note2 = np.cumsum(np.clip(note2*10, -1, 1))
+		#note2 = note2/max(np.abs(note2))
+		#notes.append(note2)
+
+	for note in notes:
+		play_note(note)
+		#play_note(note2)
+
+
+	# keylist='123456789qwertyuioasdfghjklzxcvbnm,.'
+	# notes_files = open("noteslist.txt")
+	# file_contents = notes_files.read()
+	# notes_files.close()
+	# file_contents = file_contents.replace(" ", "")
+	# file_contents = file_contents.replace("\n", "")
+	# noteslist = file_contents.split(',')
+	# #print(noteslist)
+	# #print(noteslist)
+	# keymod = '0-='
+	# notes = {}
+	# freq = 16.3516
+	# posx, posy = 25, 25#start position
+	# index = -1
+	# j = 0
+
+	# for i in range(len(noteslist)):
+	# 	mod = int(i/36)
+	# 	key = keylist[i-mod*36]+str(mod)
+	# 	sample = synth(freq)
+	# 	notes[key] = [sample, noteslist[i], freq]
+	# 	notes[key][0].set_volume(0.33)
+	# 	notes[key][0].play()
+	# 	notes[key][0].fadeout(100)
+	# 	#print(notes)
+	# 	#pg.time.wait(100)
+	# 	freq = freq * 2 ** (1/12)
+	# 	#added below to make the keyboard
+	# 	posx = posx + 140
+	# 	if posx > 1220:
+	# 		posx, posy = 25, posy+56
+		
+	# 	pg.display.update()
+
+	# running, mod = 1, 1
+	# keypresses = []
+
+	# while running:
+	# 	for event in pg.event.get():
+	# 		if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
+	# 			running = False
+	# 		if event.type == pg.KEYDOWN:
+	# 			key = str(event.unicode)
+	# 			if key in keymod:
+	# 				mod = keymod.index(str(event.unicode))
+	# 			elif key in keylist:
+	# 				key = key+str(mod)
+	# 				notes[key][0].play()
+	# 				keypresses.append([1, notes[key][1], pg.time.get_ticks()])
+	# 		if event.type == pg.KEYUP and str(event.unicode) != '' and str(event.unicode) in keylist:
+	# 			key = str(event.unicode)+str(mod)
+	# 			notes[key][0].fadeout(100)
+	# 			keypresses.append([0, notes[key][1], pg.time.get_ticks()])
+	
+	# if len(keypresses) > 1:
+	# 	for i in range(len(keypresses)-1):
+	# 		keypresses[-i-1][2] = keypresses[-i-1][2] - keypresses[-i-2][2]
+	# 	keypresses[0][2] = 0#first at zero
+
+	# 	with open("soundsequence.txt.", "w") as file:
+	# 		for i in range(len(keypresses)):
+	# 			file.write(str(keypresses[i])+'\n')#separate lines for readability
+	# 	file.close()
+
+	#print(noteslist)
 
 def collect_info(f):
 	lines = f.readlines()
@@ -11,6 +176,7 @@ def collect_info(f):
 	i = 0
 	count = 0
 	track2 = dict()
+	total_tracks = 0
 	for line in lines:
 		#if (line[0] != '#' or line[0] != '\n'):
 			#print (line, end="") # Remove all new lines
@@ -22,9 +188,10 @@ def collect_info(f):
 			tracks = line.split(' ')[1]
 			tracks = tracks.replace("\n", "")
 			tracks = tracks.split(',')
+		total_count = 0
 		if line[0].isdigit():
 			# dynamicaly creates dictionary to store tracks in
-			track2[count] = {"nbr": 0, "tracks": "", "pitch": [], "alter": [], "octa": [], "duration": []}
+			track2[count] = {"nbr": 0, "tracks": "", "pitch": [], "duration": [], "total": 0}
 			
 			# collecting nbr of track
 			track2[count].update(nbr=int(line.split(':')[0]))
@@ -36,40 +203,33 @@ def collect_info(f):
 			strstr = strstr.replace('|', '')
 			string = strstr.split(' ')
 			string.pop(0)
-			prev = 1
+			prev = 60 / tempo
 			prev_octave = 4
+			total_tracks += 1
 			for word in string:
 				j = 0
 				octave_found = 0
 				alter_found = 0
+				stage = 0
 				while j < len(word):
+					if j == 0:
+						total_count += 1
 					# collecting pitch
-					if word[j] >= 'a' and word[j] <= 'g' and j == 0:
-						track2[count]["pitch"].append(word[0])
-					elif word[j] == 'r' and j == 0:
-						track2[count]["pitch"].append(word[0])
-					elif word[j] < 'a' and word[j] > 'g' and word[j] != 'r' and j == 0:
-						track2[count]["pitch"].append("N")
+					s = ''
+					while j < len(word) and word[j] != '/':
+						if j == 0:
+							s += word[j].upper()
+						else:
+							s += word[j]
+						j += 1
+					if (len(s) == 1):
+						s += '0'
+					track2[count]["pitch"].append(s)
 					
-					# collecting alteration
-					if word[j] == '#' and j == 1:
-						track2[count]["alter"].append("#")
-						alter_found = 1
-					elif word[j] == 'b' and j == 1:
-						track2[count]["alter"].append("b")
-						alter_found = 1
-					elif word[j] != '#' and word[j] != 'b' and j == 1:
-						track2[count]["alter"].append("N")
-						alter_found = 1
-
-					# collecting octave
-					if word[j] >= '0' and word[j] <= '9':
-						track2[count]["octa"].append(int(word[j]))
-						prev_octave = int(word[j])
-						octave_found = 1
-
 					# collecting duration
-					if word[j] == '/':
+					if j == len(word):
+						track2[count]["duration"].append(prev)
+					elif word[j] == '/':
 						s = ''
 						j += 1
 						while j < len(word):
@@ -77,22 +237,12 @@ def collect_info(f):
 							j += 1
 						track2[count]["duration"].append(float(s))
 						prev = float(s)
-						if octave_found == 0:
-							track2[count]["octa"].append(prev_octave)
-						if alter_found == 0:
-							track2[count]["alter"].append("N")
-					elif j == len(word) - 1:
-						track2[count]["duration"].append(prev)
-						if octave_found == 0:
-							track2[count]["octa"].append(prev_octave)
-						if alter_found == 0:
-							track2[count]["alter"].append("N")
 					j += 1
+			track2[count].update(total=total_count)
 			count += 1
-			print(json.dumps(track2, sort_keys=False, indent=1))
 		i += 1
-	
-	print(tempo)
+	print(json.dumps(track2, sort_keys=False, indent=1))
+	music_create(track2, total_tracks)
 
 def main(argv, argc):
 	if argc == 2:
@@ -103,3 +253,6 @@ def main(argv, argc):
 
 if __name__ == "__main__":
 	main(sys.argv, len(sys.argv))
+
+#pg.mixer.quit()
+#pg.quit()
