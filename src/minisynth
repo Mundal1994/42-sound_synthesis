@@ -33,7 +33,7 @@ def collect_info(f):
 			tracks = tracks.split(',')
 		if line[0].isdigit():
 			# dynamicaly creates dictionary to store tracks in
-			track2[count] = {"nbr": 0, "tracks": "", "pitch": [], "alter": [], "octa": [], "duration": [], "total": 0}
+			track2[count] = {"nbr": 0, "tracks": "", "pitch": [], "alter": [], "octa": [], "duration": []}
 			
 			# collecting nbr of track
 			track2[count].update(nbr=int(line.split(':')[0]))
@@ -53,8 +53,11 @@ def collect_info(f):
 			string.pop(0)
 			#print(string)
 			prev = 1
+			prev_octave = 4
 			for word in string:
 				j = 0
+				octave_found = 0
+				alter_found = 0
 				while j < len(word):
 					# collecting pitch
 					if word[j] >= 'a' and word[j] <= 'g' and j == 0:
@@ -64,6 +67,23 @@ def collect_info(f):
 					elif word[j] < 'a' and word[j] > 'g' and word[j] != 'r' and j == 0:
 						track2[count]["pitch"].append("N")
 					
+					# collecting alteration
+					if word[j] == '#' and j == 1:
+						track2[count]["alter"].append("#")
+						alter_found = 1
+					elif word[j] == 'b' and j == 1:
+						track2[count]["alter"].append("b")
+						alter_found = 1
+					elif word[j] != '#' and word[j] != 'b' and j == 1:
+						track2[count]["alter"].append("N")
+						alter_found = 1
+
+					# collecting octave
+					if word[j] >= '0' and word[j] <= '9':
+						track2[count]["octa"].append(int(word[j]))
+						prev_octave = int(word[j])
+						octave_found = 1
+
 					# collecting duration
 					if word[j] == '/':
 						#print(len(word))
@@ -76,10 +96,18 @@ def collect_info(f):
 							j += 1
 						track2[count]["duration"].append(float(s))
 						prev = float(s)
+						if octave_found == 0:
+							track2[count]["octa"].append(prev_octave)
+						if alter_found == 0:
+							track2[count]["alter"].append("N")
 						#track2[count]["duration"].update(int(word[j + 1]))
 						# if end and havent found duration
 					elif j == len(word) - 1:
 						track2[count]["duration"].append(prev)
+						if octave_found == 0:
+							track2[count]["octa"].append(prev_octave)
+						if alter_found == 0:
+							track2[count]["alter"].append("N")
 					#total_count += 1
 					#print(total_count)
 					#print(track2[count]["duration"][0])
