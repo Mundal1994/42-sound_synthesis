@@ -11,15 +11,6 @@ def collect_info(f):
 	i = 0
 	count = 0
 	track2 = dict()
-	#list(track[0].values())
-	#print(track[0].keys())
-	#print(track[0].values())
-	#track[0].update(total=1)
-	# way to grab all the elements. this grabs 'octa' first element
-	#print(list(track[0].items())[0][1])
-	#print(track[0].values())
-	#print(track[0].items())
-	
 	for line in lines:
 		#if (line[0] != '#' or line[0] != '\n'):
 			#print (line, end="") # Remove all new lines
@@ -39,19 +30,12 @@ def collect_info(f):
 			track2[count].update(nbr=int(line.split(':')[0]))
 			#print(track2[count]["nbr"])
 			track2[count].update(tracks=tracks[track2[count]["nbr"] - 1])
-			#k = 4
-			#if (count == 9):
-			#	k += 1
+
 			# collect pitch, alteration, octave and duration
-			#word_count = 0
-			#print(line[5])
 			strstr = line.replace('\n', '')
-			#strstr = strstr.replace('  ', '')
 			strstr = strstr.replace('|', '')
 			string = strstr.split(' ')
-		
 			string.pop(0)
-			#print(string)
 			prev = 1
 			prev_octave = 4
 			for word in string:
@@ -86,9 +70,6 @@ def collect_info(f):
 
 					# collecting duration
 					if word[j] == '/':
-						#print(len(word))
-						#track2[count].update(duration=50)
-						#track2[count].update(duration=int(word[j + 1]))
 						s = ''
 						j += 1
 						while j < len(word):
@@ -100,28 +81,15 @@ def collect_info(f):
 							track2[count]["octa"].append(prev_octave)
 						if alter_found == 0:
 							track2[count]["alter"].append("N")
-						#track2[count]["duration"].update(int(word[j + 1]))
-						# if end and havent found duration
 					elif j == len(word) - 1:
 						track2[count]["duration"].append(prev)
 						if octave_found == 0:
 							track2[count]["octa"].append(prev_octave)
 						if alter_found == 0:
 							track2[count]["alter"].append("N")
-					#total_count += 1
-					#print(total_count)
-					#print(track2[count]["duration"][0])
-					#track2[count].update(total=total_count)
 					j += 1
-				
-			#track2[count].setdefault(pitch, []).append("bob")
-				
-
 			count += 1
 			print(json.dumps(track2, sort_keys=False, indent=1))
-			#print(string)
-			#track[i] = int(line.split(':')[0])
-			#print(track[i].nbr)
 		i += 1
 	
 	print(tempo)
