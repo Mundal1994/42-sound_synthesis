@@ -1,12 +1,14 @@
+# minisynth
 
-
-installation process
+INSTALLATION
 
 1. brew install portaudio
-2. python3 -m pip install pyaudio
+2. pip3 install pyaudio
 	if you get pip error message run the following command
 		/Library/Frameworks/Python.framework/Versions/3.9/bin/python3.9 -m pip install --upgrade pip
-3. python3 -m pip install numpy
+3. pip3 install numpy
 
+HOW TO RUN
 
-python3 -m pip install -U pygame
+1. run the following command and choose a synth file of your choise
+	./minisynth files/Simple_Tune.synth
