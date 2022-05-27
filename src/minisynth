@@ -107,13 +107,13 @@ def music_create(tracks, total_tracks):
 			time = tracks[i]["duration"][j]
 			duration.append(time)
 			j += 1
-		while j < tracks[i]["total"] and i == 1:
-			#print(tracks[i]["pitch"][j])
-			hz = convert_note_to_hz(tracks[i]["pitch"][j])
-			freqs2.append(hz)
-			time = tracks[i]["duration"][j]
-			duration.append(time)
-			j += 1
+		# while j < tracks[i]["total"] and i == 1:
+		# 	#print(tracks[i]["pitch"][j])
+		# 	hz = convert_note_to_hz(tracks[i]["pitch"][j])
+		# 	npfreqs2.append(hz)
+		# 	time = tracks[i]["duration"][j]
+		# 	duration.append(time)
+		# 	j += 1
 		i += 1
 	#print(duration[0])
 	#print(freqs)
@@ -129,27 +129,6 @@ def music_create(tracks, total_tracks):
 	#obj.close()
 	#notes2 = []
 	
-	i = 0
-	for freq in freqs:
-		#frames = int(duration*sampling_rate)
-		#note = np.cos(2*np.pi*hz*np.linspace(0,duration,frames))
-	
-		note = (np.sin(2 * np.pi * np.arange(sample_rate*duration[i])*freq/sample_rate)).astype(np.float32)
-		#square wave
-		if tracks[0]["tracks"][0] == "square":
-			note = np.clip(10*note, -1, 1)
-
-		#triangular wave
-		elif tracks[0]["tracks"][0] == "triangle":
-			note = np.cumsum(np.clip(note*10, -1, 1))
-			note = note/max(np.abs(note))
-		#print(note)
-		#value = note
-		#data = struct.pack('<h', value)
-		#obj.writeframesraw( data )
-		#stream1.write(note)
-		notes.append(note)
-		i += 1
 	p = pyaudio.PyAudio()
 	volume = 0.5
 	stream = p.open(format=pyaudio.paFloat32,
@@ -157,8 +136,31 @@ def music_create(tracks, total_tracks):
 					rate=sample_rate,
 					output=True)
 
-	for note in notes:
+
+	i = 0
+	for freq in freqs:
+		#frames = int(duration*sampling_rate)
+		#note = np.cos(2*np.pi*hz*np.linspace(0,duration,frames))
+	
+		note = (np.sin(2 * np.pi * np.arange(sample_rate*duration[i])*freq/sample_rate)).astype(np.float32)
+		#square wave
+		# if tracks[0]["tracks"][0] == "square":
+		# 	note = np.clip(10*note, -1, 1)
+
+		#triangular wave
+		# elif tracks[0]["tracks"][0] == "triangle":
+		# 	note = np.cumsum(np.clip(note*10, -1, 1))
+		# 	note = note/max(np.abs(note))
+		print(note)
+		#value = note
+		#data = struct.pack('<h', value)
+		#obj.writeframesraw( data )
+		#stream1.write(note)
 		stream.write(volume*note)
+		#notes.append(note)
+		i += 1
+	
+		#for note in notes:
 		#play_note(note)
 	stream.stop_stream()
 	stream.close()
