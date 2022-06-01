@@ -16,3 +16,6 @@ Created the tool called 'minisynth' that is able to read in a .synth file (music
 
 1. run the following command and choose a synth file of your choise
 	./minisynth files/Simple_Tune.synth
+
+
+Made in collaboration with Henri Maronen(https://github.com/HenronenGIT)
