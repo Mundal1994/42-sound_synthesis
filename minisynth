@@ -126,7 +126,8 @@ def collect_info(f):
 			string = strstr.split(' ')
 			string.pop(0)
 			prev = 60 / tempo
-			prev_octave = 4
+			prev_octave = '4'
+			prev_tempo = 'N'
 			total_tracks += 1
 			for word in string:
 				j = 0
@@ -143,24 +144,33 @@ def collect_info(f):
 							s += word[j].upper()
 						else:
 							s += word[j]
+							if word[j] != '#' and word[j] != 'b':
+								prev_octave = word[j]
 						j += 1
-					if (len(s) == 1):
-						s += '4'
+					# if len(s) == 1 or s.isdigit() == True:
+					if len(s) == 1 or any(chr.isdigit() for chr in s) == False:
+						s += prev_octave
 					track2[count]["pitch"].append(s)
 					
 					# collecting duration
 					if j == len(word):
-						track2[count]["duration"].append(prev)
+						if prev_tempo == 'N':
+							track2[count]["duration"].append(prev)
+						else:
+							track2[count]["duration"].append(float(prev_tempo) * prev)
 					elif word[j] == '/':
 						s = ''
+						prev_tempo = ''
 						j += 1
 						while j < len(word):
 							s += word[j]
+							prev_tempo += word[j]
 							j += 1
 						digit = float(s) * prev
 						track2[count]["duration"].append(digit)
 					j += 1
 			track2[count].update(total=total_count)
+			print(track2)
 			count += 1
 		i += 1
 	music_create(track2, total_tracks)
